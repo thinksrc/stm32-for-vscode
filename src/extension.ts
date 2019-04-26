@@ -7,6 +7,16 @@ const _ =  require('lodash');
 const shell = require('shelljs');
 const JSON5 = require('json5');
 
+// TODO: Rewrite this in regular old javascript
+// TODO: extract .h files from the hal_config file.
+// TODO: track changes in main.c and main.cpp, updated the one to the other for which one is newest
+// TODO: create an option to switch this behavior on or off
+// TODO: create a way to exclude main.c if main.cpp is present or if it is activated.
+// TODO: create a cli which deals with building
+// TODO: include the cli to do this.
+// TODO: Think about the clear seperation for cli and extension
+
+
 //TODO: make sure main.c is transformed into main.cpp including generated changes (add ghost file).
 export function activate(context: vscode.ExtensionContext) {
 
@@ -35,20 +45,34 @@ export function initAndBuild() {
 		vscode.window.showWarningMessage('This extension requires: "arm-none-eabi-gcc" to be available in PATH, please install make for your specific environment');
 	}
 	if(!shell.which('arm-none-eabi-g++')) {
-		vscode.window.showWarningMessage('This extension requires: "arm-none-eabi-gcc" to be available in PATH, please install make for your specific environment');
+		vscode.window.showWarningMessage('This extension requires: "arm-none-eabi-g++" to be available in PATH, please install make for your specific environment');
 	}
 	if(!shell.which('arm-none-eabi-objcopy')) {
-		vscode.window.showWarningMessage('This extension requires: "arm-none-eabi-gcc" to be available in PATH, please install make for your specific environment');
+		vscode.window.showWarningMessage('This extension requires: "arm-none-eabi-objcopy" to be available in PATH, please install make for your specific environment');
 	}
 	if(!shell.which('arm-none-eabi-size')) {
-		vscode.window.showWarningMessage('This extension requires: "arm-none-eabi-gcc" to be available in PATH, please install make for your specific environment');
+		vscode.window.showWarningMessage('This extension requires: "arm-none-eabi-size" to be available in PATH, please install make for your specific environment');
 	}
 
 
+	getLeanBuildFiles().then((list: any) => {
+		const configFile = _.find(list, (entry: any) => {
+			return entry.name.indexOf('_hal_conf.h') > 0;
+		});
 
+		// console.log('config file is', configFile);
+		fs.readFile(configFile.path, 'utf8', (err: any, file: any) => {
+			if(err) {throw err;}
+			const lines = getFileLines(configFile);
+			console.log('got these lines');
+		});
+
+	});
 	//first get build info
 	getBuildInfo().then((info) => {
+
 		 console.log('the info is', info);
+		//  console.log('tree to array, ')
 		 updateMakefile(info).then(() => {
 			// activate make in a user visible terminal
 			let terminal = vscode.window.activeTerminal;
@@ -60,7 +84,7 @@ export function initAndBuild() {
 
 		 fs.mkdir(`${vscode.workspace.rootPath}/.vscode`, (err:any) => {
 			if (err) {
-				console.log('error makind dir', err);
+				console.log('error making dir', err);
 			}
 			// check if the debug is present in the launchfile if not add it
 			updateLaunchFile(info);
@@ -70,6 +94,58 @@ export function initAndBuild() {
 		 });
 		 
 	});
+}
+
+export function getLeanBuildFiles() {
+	console.log('getting lean build files');
+	const proms = new Promise((resolve, reject) => {
+		const rootPath:string = vscode.workspace.rootPath || '';
+		diretoryTreeToObj(rootPath, (err: any, list: any) => {
+			// if(err) {throw err;}
+			const files = treeToArray(list);
+			console.log('files are', files.files);
+
+			_.map(files.folders, (entry: any, ind: number) => {
+				console.log(`${ind}:`, entry);
+			});
+			resolve(files);
+		}); 
+	});
+	return proms;
+}
+export function treeToArray(tree:any) {
+	let files: any[] = [];
+	let folders: any[] = [];
+	let output = {
+		files,
+		folders,
+	};
+	_.map(tree, (entry: any) => {
+		if(entry.type === 'file') {
+			output.files.push(entry);
+		} else if(entry.type === 'folder') {
+			output.folders.push(entry);
+			const subOut = treeToArray(entry.children);
+			const filesOut = _.concat(subOut.files, output.files);
+			const foldersOut = _.concat(subOut.folders, output.folders);
+			output = {
+				files: filesOut,
+				folders: foldersOut,
+			};
+		}
+	});
+
+	return output;
+}
+
+export function getFileLines(file: any) {
+	// const proms = new Promise((resolve, reject) => {
+			
+	// 	});
+	const lineArray = file.split(/(\r\n|\n|\r)/gm);	//remove linebreaks and split
+	const smallArray = _.slice(lineArray, 0, 30);
+	console.log('the array', smallArray);
+	return lineArray;
 }
 
 export function updateLaunchFile(makeInfo: any) {
@@ -569,7 +645,7 @@ export function createIncludes(sources: any) {
 }
 
 export function getProjectName() {
-	//TODO: Check if there is a better way to do this, which does not involve using the
+	//TODO: Check if there is a better way to do this, which does not involve using the roothpath
 	const rootPath = vscode.workspace.rootPath || '';
 	return rootPath.split('/').pop();
 }
@@ -689,8 +765,8 @@ export function diretoryTreeToObj(dir: string, done: Function) {
                         results.push({
                             name: path.basename(file),
                             type: 'folder',
-							children: res,
-							path: path.relative(vscode.workspace.rootPath, file)
+														children: res,
+														path: path.relative(vscode.workspace.rootPath, file)
                         });
                         if (!--pending)
                             done(null, results);

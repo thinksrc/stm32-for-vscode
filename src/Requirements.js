@@ -15,23 +15,23 @@ const cortexDebugConfig = workspace.getConfiguration('cortex-debug');
 const stm32Config = workspace.getConfiguration('stm32-for-vscode');
 const tools = {};
 
-export const openocdDefinition = {
-  name: 'openOCD',
-  standardCmd: 'openocd',
-  otherCmds: ['open-ocd'],
+export const stlinkDefinition = {
+  name: 'stlink',
+  standardCmd: 'stlink',
+  otherCmds: ['st-util'],
   folder: false,
-  missingMessage: 'OpenOCD is missing, please include the path to the openocd executable e.g. usr/bin/openocd, install it, or add it to your PATH variable',
+  missingMessage: 'STLink is missing, please include the path to the stlink executable e.g. usr/bin/st-util, install it, or add it to your PATH variable',
   download: {
-    standard: 'http://openocd.org/getting-openocd/',
+    standard: 'https://github.com/texane/stlink',
     darwin: null,
     linux: null,
     windows: null,
   },
-  brewCmd: 'brew install openocd',
-  aptGetCmd: 'apt-get install openocd',
+  brewCmd: 'brew install stlink',
+  aptGetCmd: 'apt-get install stlink',
   winCmd: null,
   requiredByCortexDebug: true,
-  configName: 'openocdPath',
+  configName: 'stlinkPath',
 };
 
 const makeDefinition = {
@@ -318,14 +318,14 @@ function giveWarning(definition) {
 
 export default function checkRequirements() {
   // checks each requirement in order
-  const hasOpenOCD = checkSingleRequirement(openocdDefinition);
+  const hasSTLink = checkSingleRequirement(stlinkDefinition);
   const hasMake = checkSingleRequirement(makeDefinition);
   const hasCmake = checkSingleRequirement(cmakeDefinition);
   const hasArmToolchain = checkSingleRequirement(armNoneEabiDefinition);
 
   // if no path is present. We should give a warning.
-  if (!_.isString(hasOpenOCD)) {
-    giveWarning(openocdDefinition);
+  if (!_.isString(hasSTLink)) {
+    giveWarning(stlinkDefinition);
   }
   if (!_.isString(hasMake)) {
     giveWarning(makeDefinition);
@@ -337,7 +337,7 @@ export default function checkRequirements() {
     giveWarning(hasArmToolchain);
   }
   return ({
-    openOCD: hasOpenOCD,
+    stlink: hasSTLink,
     make: hasMake,
     cMake: hasCmake,
     armToolchain: hasArmToolchain,

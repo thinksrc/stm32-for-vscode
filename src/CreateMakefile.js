@@ -5,7 +5,6 @@
  * Created by Jort Band - Bureau Moeilijke Dingen
 */
 import _ from 'lodash';
-// TODO: include the openocd path to the makeInfo.
 
 /**
  * @description creates a makefile readable list.
@@ -204,14 +203,14 @@ $(BUILD_DIR):
 #######################################
 # flash
 #######################################
-flash: $(BUILD_DIR)/$(TARGET).elf
-\t${makeInfo.tools.openOCD ? makeInfo.tools.openOCD : 'openocd'} -f interface/stlink-v2-1.cfg  -f target/${makeInfo.targetMCU}.cfg -c "program $(BUILD_DIR)/$(TARGET).elf verify reset exit"
+flash: $(BUILD_DIR)/$(TARGET).bin
+\t${makeInfo.tools.stflash ? makeInfo.tools.stflash : 'st-flash'} --reset write $(BUILD_DIR)/$(TARGET).bin 0x08000000; exit
 
 #######################################
 # erase
 #######################################
-erase: $(BUILD_DIR)/$(TARGET).elf
-\t${makeInfo.tools.openOCD ? makeInfo.tools.openOCD : 'openocd'} -f interface/stlink-v2-1.cfg -f target/${makeInfo.targetMCU}.cfg -c "init; reset halt; ${makeInfo.targetMCU} mass_erase 0; exit"
+erase:
+\t${makeInfo.tools.stflash ? makeInfo.tools.stflash : 'st-flash'} erase; exit
 
 #######################################
 # clean up

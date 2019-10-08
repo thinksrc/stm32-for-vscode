@@ -13,8 +13,8 @@
     "Nucleo",
     "CubeMX"
   ],
-  "publisher": "bmd",
-  "repository": "https://github.com/bmd-studio/stm32-for-vscode",
+  "publisher": "thinker",
+  "repository": "https://github.com/thinksrc/stm32-for-vscode",
   "categories": [
     "Other"
   ],
@@ -50,10 +50,10 @@
       "type": "object",
       "title": "STM32 for VSCode configuration",
       "properties": {
-        "stm32-for-vscode.openocdPath": {
+        "stm32-for-vscode.stlinkPath": {
           "type": "string",
           "default": "",
-          "description": "Path to openOCD, will use the one in PATH or the cortex-debug settings automatically"
+          "description": "Path to stlink, will use the one in PATH or the cortex-debug settings automatically"
         },
         "stm32-for-vscode.makePath": {
           "type": "string",

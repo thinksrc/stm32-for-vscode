@@ -5,7 +5,7 @@ import sinon from 'sinon';
 import shelljs from 'shelljs';
 import path from 'path';
 import {
-  checkToolPath, openocdDefinition, armNoneEabiDefinition,
+  checkToolPath, stlinkDefinition, armNoneEabiDefinition,
 } from '../../src/Requirements';
 
 
@@ -18,23 +18,23 @@ suite('Requirements test', () => {
   });
   test('checkToolPath does not have tool test', () => {
     shellJSStub.returns(false);
-    assert.equal(checkToolPath(openocdDefinition, '.'), false);
-    assert.equal(checkToolPath(openocdDefinition, '/fakepath'), false);
+    assert.equal(checkToolPath(stlinkDefinition, '.'), false);
+    assert.equal(checkToolPath(stlinkDefinition, '/fakepath'), false);
   });
 
   test('checkToolPath does have tool', () => {
     // assert.equal(checkToolPath(fakeCMDDefinition, '.'), false);
     shellJSStub.returns(true);
-    assert.equal(checkToolPath(openocdDefinition, '/usr/bin/open-ocd'), '/usr/bin/open-ocd');
+    assert.equal(checkToolPath(stlinkDefinition, '/usr/bin/st-util'), '/usr/bin/st-util');
     shellJSStub.returns(false);
-    shellJSStub.withArgs('/usr/bin/openocd').returns(true);
-    assert.equal(checkToolPath(openocdDefinition, '/usr/bin/'), '/usr/bin/openocd');
-    shellJSStub.withArgs('/usr/bin/openocd').returns(false); // reset
-    shellJSStub.withArgs('/usr/bin/open-ocd').returns(true);
-    assert.equal(checkToolPath(openocdDefinition, '/usr/bin'), '/usr/bin/open-ocd');
-    assert.equal(checkToolPath(openocdDefinition, 'usr/'), false);
-    assert.equal(checkToolPath(openocdDefinition, '/usr/bin/open-ocd'), '/usr/bin/open-ocd');
-    shellJSStub.withArgs('/usr/bin/open-ocd').returns(false); // reset
+    shellJSStub.withArgs('/usr/bin/st-util').returns(true);
+    assert.equal(checkToolPath(stlinkDefinition, '/usr/bin/'), '/usr/bin/st-util');
+    shellJSStub.withArgs('/usr/bin/st-util').returns(false); // reset
+    shellJSStub.withArgs('/usr/bin/st-util').returns(true);
+    assert.equal(checkToolPath(stlinkDefinition, '/usr/bin'), '/usr/bin/st-util');
+    assert.equal(checkToolPath(stlinkDefinition, 'usr/'), false);
+    assert.equal(checkToolPath(stlinkDefinition, '/usr/bin/st-util'), '/usr/bin/st-util');
+    shellJSStub.withArgs('/usr/bin/st-util').returns(false); // reset
   });
   test('checkToolPath does not have folder', () => {
     shellJSStub.returns(false);

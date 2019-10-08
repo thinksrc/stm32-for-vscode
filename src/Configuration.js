@@ -17,7 +17,7 @@ function getLaunchTask(info) {
     name: 'Debug STM32',
     request: 'launch',
     type: 'cortex-debug',
-    servertype: 'openocd',
+    servertype: 'stutil',
     preLaunchTask: 'Build STM',
     device: 'stlink',
     configFiles: [
@@ -189,7 +189,7 @@ function getCPropertiesConfig(info) {
     name: 'STM32',
     includePath: includePaths,
     defines: getDefinitions(info),
-    compilerPath: shelljs.which('gcc'),
+    compilerPath: shelljs.which('arm-none-eabi-gcc'),
     cStandard: 'c11',
     cppStandard: 'c++11',
   };

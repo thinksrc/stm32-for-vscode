@@ -34,4 +34,4 @@ Use cmd/ctrl+shift+p to open the show all commands panel and issue the command: 
 - Detection of required tools and creating a warning.
 
 ## Disclaimer
-This an extension created because I wanted a fast way to build, flash and debug STM32 on OSX in VSCode. This extension is used internally at Bureau Moeilijke Dingen for development. As this might be helpfull to others I have allocated time to publish this extension. Should you find any bugs or have feature requests please open an issue on the [Github page](https://github.com/bmd-studio/stm32-for-vscode).
+This an extension created because I wanted a fast way to build, flash and debug STM32 on OSX in VSCode. This extension is used internally at Peter Chen for development, and branch from [bmd-studio](https://github.com/bmd-studio/stm32-for-vscode). As this might be helpfull to others I have allocated time to publish this extension. Should you find any bugs or have feature requests please open an issue on the [Github page](https://github.com/thinksrc/stm32-for-vscode).

@@ -1,6 +1,10 @@
 # Changelog
 
 ## [Unreleased]
+### Changed
+  - Change dependency of openocd to stlink
+
+## [Unreleased]
 ### Added
   - Add support to use different project types (EWARM, STM32CubeIDE, etc.).
   - Add support for compilation without generation of the .c/.h peripheral files.
